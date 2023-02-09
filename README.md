@@ -4,9 +4,9 @@ AlvaAR is a realtime visual SLAM algorithm running as WebAssembly, in the browse
 
 ![image](examples/public/assets/image.gif)
 
-
 ## Examples
-The examples use [ThreeJS](https://threejs.org/) to apply and render the estimated camera pose to a 3d environment.  
+
+The examples use [ThreeJS](https://threejs.org/) to apply and render the estimated camera pose to a 3d environment.
 
 [Video Demo](https://alanross.github.io/AlvaAR/examples/public/video.html): A desktop browser version using a video file as input.  
 [Camera Demo](https://alanross.github.io/AlvaAR/examples/public/camera.html): The mobile version will access the device camera as input.
@@ -14,43 +14,50 @@ The examples use [ThreeJS](https://threejs.org/) to apply and render the estimat
 <img width="75" src="examples/public/assets/qr.png">
 
 ### Run with http server
+
 To run the examples on your local machine, start a simple http server in the examples/ folder:
 
-`$: python 2: python -m SimpleHTTPServer 8080` or   
+`$: python 2: python -m SimpleHTTPServer 8080` or  
 `$: python 3: python -m http.server 8080` or  
 `$: emrun --browser chrome ./`
 
 Then open [http://localhost:8080/public/video.html](http://localhost:8080/public/video.html]) in your browser.
 
 ### Run with https server
+
 To run the examples on another device in your local network, they must be served via https. For convenience, a simple https server was added to this project – do not use for production.
 
 #### 1) Install server dependencies
+
 ```
     $: cd ./AlvaAR/examples/
     $: npm install
 ```
 
 #### 2) Generate self-signed certificate
+
 ```
     $: cd ./AlvaAR/examples
     $: mkdir ssl/
     $: cd ssl/
-    $: openssl genrsa -des3 -out key.pem 2048
-    $: openssl req -new -sha256 -key key.pem -out cert.csr
+    $: openssl genrsa -out client-key.pem 2048
+    $: openssl req -new -key client-key.pem -out client.csr
+    $: openssl x509 -req -in client.csr -signkey client-key.pem -out client-cert.pem
+    (src: https://stackoverflow.com/questions/34835859/node-js-https-example-error-unknown-ssl-protocol-error-in-connection-to-localh/35053638#35053638)
 ```
 
 #### 3) Run
+
 ```
     $: cd ./AlvaAR/examples/
     $: nvm use 13.2
     $: npm start
-``` 
+```
+
 Then open [https://YOUR_IP:443/video.html](https://YOUR_IP:443/video.html]) in your browser.
 If met with a <b>ERR_CERT_INVALID</b> error in Chrome,
 try typing <i>badidea</i> or <i>thisisunsafe</i> directly in Chrome on the same page.
 Don’t do this unless the site is one you trust or develop.
-
 
 ## Usage
 
@@ -76,15 +83,15 @@ function loop()
 {
     ctx.clearRect( 0, 0, width, height );
     ctx.drawImage( videoOrWebcam, 0, 0, width, height );
-    
+
     const frame = ctx.getImageData( 0, 0, width, height );
-    
+
     // cameraPose holds the rotation/translation information where the camera is estimated to be
     const cameraPose = alva.findCameraPose( frame );
-    
+
     // planePose holds the rotation/translation information of a detected plane
     const planePose = alva.findPlane();
-    
+
     // The tracked points in the frame
     const points = alva.getFramePoints();
 
@@ -95,34 +102,36 @@ function loop()
 };
 ```
 
-
 ## Build
 
 ### Prerequisites
 
 #### Emscripten
+
 Ensure [Emscripten](https://emscripten.org/docs/getting_started/Tutorial.html) is installed and activated in your session.
 
 ```
-    $: source [PATH]/emsdk/emsdk_env.sh 
+    $: source [PATH]/emsdk/emsdk_env.sh
     $: emcc -v
 ```
 
 #### C++11 or Higher
+
 Alva makes use of C++11 features and should thus be compiled with a C++11 or higher flag.
 
 ### Dependencies
 
-| Dependency             | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
-|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Eigen3                 | Download Eigen 3.4. Find all releases [here](https://eigen.tuxfamily.org/index.php?title=Main_Page).This project has been tested with 3.4.0                                                                                                                                                                                                                                                                                         |
-| OpenCV                 | Download OpenCV 4.5. Find all releases [here](https://opencv.org/releases/).This project has been tested with [4.5.5](https://github.com/opencv/opencv/archive/4.5.5.zip).                                                                                                                                                                                                                                                          |
-| iBoW-LCD               | A modified version of [iBoW-LCD](https://github.com/emiliofidalgo/ibow-lcd) is included in the libs folder. It has been turned into a static shared lib. Same goes for [OBIndex2](https://github.com/emiliofidalgo/obindex2), the required dependency for iBoW-LCD. Check the lcdetector.h and lcdetector.cc files to see the modifications w.r.t. to the original code. Both CMakeList have been adjusted to work with Emscripten. |
-| Sophus                 | [Sophus](https://github.com/strasdat/Sophus) is used for _*SE(3), SO(3)*_ elements representation.                                                                                                                                                                                                                                                                                                                                  |
-| Ceres Solver           | [Ceres](https://github.com/ceres-solver/ceres-solver) is used for optimization related operations such as PnP, Bundle Adjustment or PoseGraph Optimization. Note that [Ceres dependencies](http://ceres-solver.org/installation.html) are still required.                                                                                                                                                                           |
-| OpenGV                 | [OpenGV](https://github.com/laurentkneip/opengv) is used for Multi-View-Geometry (MVG) operations.                                                                                                                                                                                                                                                                                                                                  |
+| Dependency   | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Eigen3       | Download Eigen 3.4. Find all releases [here](https://eigen.tuxfamily.org/index.php?title=Main_Page).This project has been tested with 3.4.0                                                                                                                                                                                                                                                                                         |
+| OpenCV       | Download OpenCV 4.5. Find all releases [here](https://opencv.org/releases/).This project has been tested with [4.5.5](https://github.com/opencv/opencv/archive/4.5.5.zip).                                                                                                                                                                                                                                                          |
+| iBoW-LCD     | A modified version of [iBoW-LCD](https://github.com/emiliofidalgo/ibow-lcd) is included in the libs folder. It has been turned into a static shared lib. Same goes for [OBIndex2](https://github.com/emiliofidalgo/obindex2), the required dependency for iBoW-LCD. Check the lcdetector.h and lcdetector.cc files to see the modifications w.r.t. to the original code. Both CMakeList have been adjusted to work with Emscripten. |
+| Sophus       | [Sophus](https://github.com/strasdat/Sophus) is used for _*SE(3), SO(3)*_ elements representation.                                                                                                                                                                                                                                                                                                                                  |
+| Ceres Solver | [Ceres](https://github.com/ceres-solver/ceres-solver) is used for optimization related operations such as PnP, Bundle Adjustment or PoseGraph Optimization. Note that [Ceres dependencies](http://ceres-solver.org/installation.html) are still required.                                                                                                                                                                           |
+| OpenGV       | [OpenGV](https://github.com/laurentkneip/opengv) is used for Multi-View-Geometry (MVG) operations.                                                                                                                                                                                                                                                                                                                                  |
 
 #### Build Dependencies
+
 For convenience, a copy of all required libraries has been included in the libs/ folder. Run the following script to compile all libraries to wasm modules which can be linked into the main project.
 
 ```
@@ -144,23 +153,21 @@ Then, run the following:
     $: cd ./AlvaAR/src/slam
     $: mkdir build/
     $: cd build/
-    $: emcmake cmake .. 
+    $: emcmake cmake ..
     $: emmake make install
 ```
 
-
 ## Roadmap
+
 - [ ] Improve the initialisation phase to be more stable and predictable.
 - [ ] Move feature extraction and tracking to GPU.
-- [ ] Blend visual SLAM with IMU data to increase robustness. 
-
+- [ ] Blend visual SLAM with IMU data to increase robustness.
 
 ## License
 
-AlvaAR is released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).  
+AlvaAR is released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
 
 OV²SLAM and ORB-SLAM2 are both released under the [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt). Please see 3rd party dependency licenses in libs/.
-
 
 ## Contact
 
