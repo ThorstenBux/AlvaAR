@@ -55,7 +55,7 @@ export const useAlvaAR = ({
   const { canvas, ctx } = useMemo(() => {
     if (!videoReady) return { canvas: undefined };
     const $canvas = document.createElement('canvas');
-    document.body.append($canvas);
+    // document.body.append($canvas);
     const ctx = $canvas.getContext('2d', {
       alpha: false,
       desynchronized: true,
@@ -71,7 +71,7 @@ export const useAlvaAR = ({
   }>();
 
   const { camera } = useThree();
-  console.log('video', video);
+  // console.log('video', video);
 
   useFrame(() => {
     if (!alva || !ctx || !video || !size || !camera || !videoReady) return;
@@ -91,6 +91,11 @@ export const useAlvaAR = ({
     const pose = alva.findCameraPose(frame);
     if (pose) {
       applyPose(pose, camera.quaternion, camera.position);
+      // camera.position.x = camera.position.x + 0;
+      // camera.position.y = camera.position.y + 2;
+      // camera.position.z = camera.position.z + 3;
+      // camera.updateProjectionMatrix();
+      console.log('pose', pose);
     } else {
       console.warn('no tracking possible');
     }

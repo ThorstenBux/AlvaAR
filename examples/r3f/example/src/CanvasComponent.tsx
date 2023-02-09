@@ -19,18 +19,21 @@ export const CanvasComponent = ({
     <div id='container' ref={containerRef}>
       <Canvas
         shadows
-        linear
+        // linear
         ref={canvasRef}
         gl={{
           preserveDrawingBuffer: true,
           antialias: true,
+          toneMappingExposure: 0.7,
           physicallyCorrectLights: true,
           toneMapping: ACESFilmicToneMapping,
-          outputEncoding: sRGBEncoding,
+          // outputEncoding: sRGBEncoding,
         }}
-        onCreated={({ scene, gl }) => {
+        onCreated={({ scene, gl, camera }) => {
           gl.shadowMap.enabled = true;
           gl.shadowMap.type = PCFSoftShadowMap;
+          // camera.rotation.reorder('YXZ');
+          // camera.updateProjectionMatrix();
         }}
         style={{
           pointerEvents: 'inherit',
@@ -39,10 +42,14 @@ export const CanvasComponent = ({
           height: '100vh',
         }}
         camera={{
-          position: [0, 10, 6],
+          // position: [0, 10, 6],
+          aspect:
+            canvasRef &&
+            (canvasRef.current?.width || 1) / (canvasRef.current?.height || 1),
           fov: 75,
           near: 0.1,
           far: 1000,
+          // matrixAutoUpdate: false,
         }}
       >
         <AlvaARComponent

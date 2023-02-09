@@ -25,10 +25,10 @@ const AlvaARComponent = ({
 
   return (
     <>
-      <DeviceOrientationControls />
+      {/* <DeviceOrientationControls /> */}
 
       {/* Shadow plane */}
-      <Plane
+      {/* <Plane
         receiveShadow
         args={[30, 30]}
         name={'ground'}
@@ -36,16 +36,21 @@ const AlvaARComponent = ({
         position={[0, -0.1, 0]}
       >
         <shadowMaterial attach='material' opacity={0.5} color={'#000000'} />
-      </Plane>
+      </Plane> */}
       {/* The real content */}
-      <mesh>
-        <boxGeometry />
-        <meshStandardMaterial color={'#ff0000'}></meshStandardMaterial>
+      <Environment preset='city' background={false} />
+
+      <mesh position={[0, 0, -1]}>
+        <sphereGeometry />
+        <meshStandardMaterial
+          color={'#ffffff'}
+          roughness={0}
+          metalness={1}
+        ></meshStandardMaterial>
       </mesh>
       {/* Setup lighting */}
       <ambientLight intensity={0.1} />
-      <directionalLight color='red' position={[0, 0, 5]} />
-      <Environment preset='city' background={false} />
+      {/* <directionalLight color='red' position={[0, 0, 5]} /> */}
       {/* <gridHelper args={[30, 30, '#000000', '#f1f1f1']} /> */}
       {/* </Debug> */}
     </>
